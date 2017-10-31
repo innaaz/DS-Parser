@@ -1,0 +1,18 @@
+{
+  "name": "parser",
+  "version": "1.0.0",
+  "description": "parses html-pages",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "parser"
+  ],
+  "author": "Inna Azarova inna.azarova.89@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "walk": "^2.3.9"
+  }
+}
