@@ -21,30 +21,35 @@ walker.on('file', function (root, fileStats, next) {
   // read the file
   fs.readFile(root + '/' + fileStats.name, 'utf8', function (err,data) {
     if (err) {
-      return console.log(err)
+      return console.log(err) 
     }
     // parse the file content using cheerio
     const $ = cheerio.load(data)
-    // create meta Hashmap
-    const meta = {}
-    // find all meta tags in the parsed html that contain necessary attributes
-    $('meta[property], meta[name], meta[itemprop]').each(function(i, elem){
-      const $elem = $(elem)
-      // get property attribute of the meta tag
-      const property = $elem.attr('property')
-      // get name attribute
-      const name = $elem.attr('name')
-      // get itemprop attribute
-      const itemprop = $elem.attr('itemprop')
-      // get content attribute
-      const content = $elem.attr('content')
-      // extend the meta hashmap with a new key being one of (property, name or itemprop) 
-      // and value being the content attribute
-      meta[property || name || itemprop] = content
+    // create Hashmap that will contain arrays of meta, link, script 
+    const result = {meta: [], link: [], script: []}
+    // find all meta tags in the parsed html and save their attributes in the result hashmap
+    $('meta').each(function(i, elem){
+      const attrs = $(elem).get(0).attribs
+      result.meta.push(attrs)
     })
+    // find all script tags extract filename from src attribute and add it to result hashmap
+    $('script').each(function(i, elem){
+      const attrs = $(elem).get(0).attribs
+      const src = attrs.src
+      if (src) {
+        const filename = src.replace(/^[^?]*\/([^\/?]+).*$/, '$1')
+        result.script.push(filename)
+      }
+    })
+    // find all link taks and add them to result hashmap
+    $('link').each(function(i, elem){
+      const attrs = $(elem).get(0).attribs
+      result.link.push(attrs)
+    })
+    result.title = $('title').text()
   
     // convert to JSON-formatted string
-    const json = JSON.stringify(meta, null, 2)
+    const json = JSON.stringify(result, null, 2)
     // write the string to output folder of the project as .json
     fs.writeFile('output/' + fileStats.name.replace('.html','.json'), json, function(err) {
       if(err) {
