@@ -23,6 +23,8 @@ walker.on('file', function (root, fileStats, next) {
     if (err) {
       return console.log(err) 
     }
+    // fix invalid script tags which for some reason are all like that in the available html files
+    data = data.replace(/<script([^/]*)\/>/g, '<script$1></script>')
     // parse the file content using cheerio
     const $ = cheerio.load(data)
     // create Hashmap that will contain arrays of meta, link, script 
@@ -50,8 +52,9 @@ walker.on('file', function (root, fileStats, next) {
   
     // convert to JSON-formatted string
     const json = JSON.stringify(result, null, 2)
+    const newFileName = root.replace(directoryWithHtmlFiles, '').replace(/^\//, '').replace(/\//g, '_') + '_' + fileStats.name.replace('.html','.json')
     // write the string to output folder of the project as .json
-    fs.writeFile('output/' + fileStats.name.replace('.html','.json'), json, function(err) {
+    fs.writeFile('output/' + newFileName, json, function(err) {
       if(err) {
         return console.log(err)
       }
