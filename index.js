@@ -3,6 +3,7 @@
 // would make process.argv equal to an array: ['node', 'index', '/test']
 const directoryWithHtmlFiles = process.argv[2] 
 
+const path = require('path')
 // load cheerio module which is a fast and forgiving html parser
 const cheerio = require('cheerio')
 // load walk module which allows recursively reading files in a folder
@@ -52,9 +53,10 @@ walker.on('file', function (root, fileStats, next) {
   
     // convert to JSON-formatted string
     const json = JSON.stringify(result, null, 2)
-    const newFileName = root.replace(directoryWithHtmlFiles, '').replace(/^\//, '').replace(/\//g, '_') + '_' + fileStats.name.replace('.html','.json')
+    const newFilePath = path.join(root, fileStats.name.replace('.html', '.json'))
+
     // write the string to output folder of the project as .json
-    fs.writeFile('output/' + newFileName, json, function(err) {
+    fs.writeFile(newFilePath, json, function(err) {
       if(err) {
         return console.log(err)
       }
