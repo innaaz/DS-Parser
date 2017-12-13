@@ -53,9 +53,9 @@ walker.on('file', function (root, fileStats, next) {
   
     // convert to JSON-formatted string
     const json = JSON.stringify(result, null, 2)
-    const newFilePath = path.join(root, fileStats.name.replace('.html', '.json'))
+    const newFilePath = root + '/' + root.replace(directoryWithHtmlFiles, '').replace(/^\//, '').replace(/\//g, '_') + '.json'
 
-    // write the string to output folder of the project as .json
+    // write the string to json file in the same folder where the html file is
     fs.writeFile(newFilePath, json, function(err) {
       if(err) {
         return console.log(err)
